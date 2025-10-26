@@ -53,3 +53,5 @@ what will get ?
 what we will add ?
 - A web-APP demo showcasing real-time predictions.
 - Clear visualizations of dataset insights and model performance.
+
+- here is a web app that can be really good with our project  it is just a demo used gemini ai to do it  https://gemini.google.com/share/b1a880c72e05
