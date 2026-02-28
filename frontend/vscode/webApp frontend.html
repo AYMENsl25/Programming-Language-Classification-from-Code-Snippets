@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Language Classifier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #6d9afaaf;
+    }
+    .code-input {
+      min-height: 200px;
+      font-family: monospace;
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      resize: none;
+    }
+  </style>
+</head>
+<body class="p-6 flex items-center justify-center min-h-screen">
+
+  <div class="max-w-3xl w-full bg-white p-8 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center mb-4">Code Language Classifier</h1>
+
+    <!-- Code Input -->
+    <label for="code" class="block text-sm font-medium text-gray-700 mb-2">Enter your code here please:</label>
+    <textarea id="code" class="code-input w-full mb-6" placeholder="e.g., def hello(): print('Hi')"></textarea>
+
+    <!-- Model Selection -->
+    <label for="model" class="block text-sm font-medium text-gray-700 mb-2">Select Model:</label>
+    <select id="model" class="w-full mb-6 px-4 py-2 border rounded-lg">
+      <option value="NaiveBayes">Naive Bayes</option>
+      <option value="LinearSVM">Linear SVM</option>
+      <option value="BiLSTM">BiLSTM</option>
+      <option value="CNNLSTM">CNN + LSTM</option>
+      <option value="LogisticRegression">Logistic Regression</option>
+      <option value="CodeBERT">CodeBERT</option>
+    </select>
+
+    <!-- Classify Button -->
+    <button id="classify" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition">
+      Classify Code
+    </button>
+
+    <!-- Result Display -->
+    <div id="result" class="mt-6 p-4 bg-gray-100 rounded-lg text-center hidden">
+      <h2 class="text-xl font-semibold text-gray-800">Prediction:</h2>
+      <p id="language" class="text-2xl font-bold text-indigo-600 mt-2"></p>
+      <p id="confidence" class="text-sm text-gray-500 mt-1"></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('classify').addEventListener('click', async () => {
+      const code = document.getElementById('code').value.trim();
+      const model = document.getElementById('model').value;
+      const resultBox = document.getElementById('result');
+      const language = document.getElementById('language');
+      const confidence = document.getElementById('confidence');
+
+      if (!code) {
+        language.textContent = 'Please enter some code.';
+        confidence.textContent = '';
+        resultBox.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/classify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, model })
+        });
+
+        const data = await response.json();
+        language.textContent = data.language;
+        confidence.textContent = data.confidence;
+        resultBox.classList.remove('hidden');
+      } catch (error) {
+        language.textContent = 'Error connecting to server.';
+        confidence.textContent = '';
+        resultBox.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
